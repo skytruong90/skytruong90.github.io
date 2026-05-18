@@ -4,460 +4,1181 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>David Tan | 6DOF Modeling & Simulation Engineer</title>
+  <title>David Tan — 6DOF Modeling & Simulation Engineer</title>
 
   <meta
     name="description"
-    content="David Tan - 6DOF Modeling and Simulation Engineer specializing in missile simulation, flight dynamics, C++, Python, Java, Linux, Monte Carlo analysis, and defense software engineering."
+    content="David Tan — 6DOF Modeling and Simulation Engineer. High-fidelity missile simulation, flight dynamics, guidance & control, Monte Carlo analysis. C++, Python, Linux. Based in Huntsville, AL."
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
   />
 
   <style>
     :root {
-      --bg: #f7f8fb;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --accent: #2563eb;
-      --border: #e5e7eb;
+      --bg:        #0b0c0e;
+      --bg-elev:   #111316;
+      --line:      rgba(255, 255, 255, 0.08);
+      --line-2:    rgba(255, 255, 255, 0.14);
+      --text:      #e9e6df;
+      --text-dim:  #a4a097;
+      --muted:     #6c6960;
+      --accent:    #d6a35c;  /* instrument amber */
+      --accent-dim:#8a6a3a;
+      --display:   "Instrument Serif", "Cormorant Garamond", Georgia, serif;
+      --sans:      "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:      "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: var(--sans);
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.55;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    a {
-      color: var(--accent);
-      text-decoration: none;
+    /* Subtle grain overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
     }
 
-    a:hover {
-      text-decoration: underline;
+    /* Engineering grid background, very subtle */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse at 50% 30%, #000 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 30%, #000 30%, transparent 75%);
+      opacity: 0.55;
     }
 
-    .container {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 32px 20px 56px;
-    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--text); }
 
-    header {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 36px;
-      margin-bottom: 24px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-    }
-
-    .eyebrow {
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 0.9rem;
+    /* ============ TOP STATUS BAR ============ */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 28px;
+      font-family: var(--mono);
+      font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      color: var(--text-dim);
+      background: linear-gradient(to bottom, rgba(11,12,14,0.85), rgba(11,12,14,0));
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
 
-    h1 {
-      font-size: clamp(2.1rem, 5vw, 3.5rem);
-      line-height: 1.1;
-      margin-bottom: 12px;
+    .topbar .left, .topbar .right {
+      display: flex;
+      gap: 22px;
+      align-items: center;
     }
 
-    .subtitle {
-      font-size: 1.2rem;
+    .topbar .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.55; transform: scale(0.85); }
+    }
+
+    .topbar a { color: var(--text-dim); }
+    .topbar a:hover { color: var(--accent); }
+
+    @media (max-width: 720px) {
+      .topbar { padding: 14px 18px; font-size: 10px; }
+      .topbar .hide-mob { display: none; }
+    }
+
+    /* ============ CONTAINER ============ */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    @media (max-width: 720px) {
+      .container { padding: 0 20px; }
+    }
+
+    /* ============ HERO ============ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 0 80px;
+      position: relative;
+    }
+
+    .hero-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
       color: var(--muted);
-      max-width: 800px;
-      margin-bottom: 24px;
+      margin-bottom: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+      align-items: center;
+      opacity: 0;
+      animation: fade-up 0.9s ease 0.1s forwards;
     }
 
-    .button-row {
+    .hero-meta .tick {
+      width: 16px; height: 1px;
+      background: var(--accent);
+    }
+
+    .hero h1 {
+      font-family: var(--display);
+      font-size: clamp(3.4rem, 10vw, 7.5rem);
+      font-weight: 400;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fade-up 1s ease 0.25s forwards;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+      font-weight: 400;
+    }
+
+    .hero-sub {
+      max-width: 640px;
+      font-size: clamp(1rem, 1.4vw, 1.18rem);
+      color: var(--text-dim);
+      line-height: 1.55;
+      margin-bottom: 44px;
+      opacity: 0;
+      animation: fade-up 1s ease 0.4s forwards;
+    }
+
+    .hero-sub strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .btn-row {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 20px;
+      opacity: 0;
+      animation: fade-up 1s ease 0.55s forwards;
     }
 
-    .button {
-      display: inline-block;
-      padding: 11px 16px;
-      border-radius: 999px;
-      font-weight: 700;
-      border: 1px solid var(--border);
-      background: #fff;
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      border: 1px solid var(--line-2);
+      background: transparent;
+      border-radius: 0;
+      transition: all 0.25s ease;
+      cursor: pointer;
     }
 
-    .button.primary {
+    .btn:hover {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    .btn.primary {
       background: var(--accent);
-      color: #fff;
+      color: var(--bg);
       border-color: var(--accent);
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
+    .btn.primary:hover {
+      background: var(--text);
+      border-color: var(--text);
     }
 
+    .btn .arrow {
+      transition: transform 0.25s ease;
+    }
+
+    .btn:hover .arrow {
+      transform: translateX(3px);
+    }
+
+    /* Trajectory SVG decoration */
+    .traj {
+      position: absolute;
+      top: 18%;
+      right: -100px;
+      width: 540px;
+      height: 540px;
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .traj path {
+      stroke: var(--accent);
+      stroke-width: 1;
+      fill: none;
+      stroke-dasharray: 1400;
+      stroke-dashoffset: 1400;
+      animation: draw 3.5s ease 0.6s forwards;
+    }
+
+    .traj .grid-line {
+      stroke: var(--line-2);
+      stroke-width: 0.5;
+    }
+
+    .traj .marker {
+      fill: var(--accent);
+    }
+
+    .traj text {
+      font-family: var(--mono);
+      font-size: 9px;
+      fill: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    @keyframes draw {
+      to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .traj { display: none; }
+    }
+
+    /* ============ SECTION SHARED ============ */
     section {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 28px;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+      padding: 110px 0;
+      position: relative;
+      border-top: 1px solid var(--line);
     }
 
-    h2 {
-      font-size: 1.35rem;
-      margin-bottom: 14px;
+    .section-head {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 60px;
+      margin-bottom: 60px;
+      align-items: baseline;
     }
 
-    h3 {
-      font-size: 1.05rem;
-      margin-bottom: 4px;
-    }
-
-    .muted {
+    .section-index {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
       color: var(--muted);
-    }
-
-    ul {
-      padding-left: 20px;
-      margin-top: 8px;
-    }
-
-    li {
-      margin-bottom: 8px;
-    }
-
-    .tag-list {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
+      align-items: center;
+      gap: 12px;
     }
 
-    .tag {
-      background: #eef2ff;
-      color: #3730a3;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 0.9rem;
-      font-weight: 700;
+    .section-index::before {
+      content: "";
+      width: 28px; height: 1px;
+      background: var(--accent);
     }
 
-    .item {
-      padding-bottom: 18px;
-      margin-bottom: 18px;
-      border-bottom: 1px solid var(--border);
+    .section-title {
+      font-family: var(--display);
+      font-size: clamp(2rem, 4.5vw, 3rem);
+      font-weight: 400;
+      line-height: 1;
+      color: var(--text);
+      letter-spacing: -0.015em;
     }
 
-    .item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-top: 20px;
+    .section-title em {
+      font-style: italic;
+      color: var(--accent);
     }
 
     @media (max-width: 760px) {
-      header,
-      section {
-        padding: 24px;
-      }
-
-      .grid {
+      section { padding: 80px 0; }
+      .section-head {
         grid-template-columns: 1fr;
+        gap: 18px;
+        margin-bottom: 40px;
       }
+    }
+
+    /* ============ ABOUT ============ */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 60px;
+    }
+
+    .about-body {
+      max-width: 720px;
+    }
+
+    .about-body p {
+      font-size: 1.18rem;
+      line-height: 1.65;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+
+    .about-body p:last-child { margin-bottom: 0; }
+
+    .about-body strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .about-aside {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .about-aside div span:first-child {
+      display: block;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+    }
+
+    .about-aside div span:last-child {
+      color: var(--text);
+    }
+
+    @media (max-width: 760px) {
+      .about-grid { grid-template-columns: 1fr; gap: 36px; }
+    }
+
+    /* ============ SKILLS ============ */
+    .skill-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: 0;
+    }
+
+    .skill-block {
+      padding: 32px 28px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .skill-block:nth-child(3n) { border-right: none; }
+    .skill-block:nth-last-child(-n+3) { border-bottom: none; }
+
+    .skill-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+
+    .skill-block ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .skill-block li {
+      font-size: 0.98rem;
+      color: var(--text);
+      padding: 5px 0;
+      border-bottom: 1px dashed transparent;
+      transition: color 0.2s ease;
+    }
+
+    .skill-block li:hover { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      .skill-grid { grid-template-columns: repeat(2, 1fr); }
+      .skill-block:nth-child(3n) { border-right: 1px solid var(--line); }
+      .skill-block:nth-child(2n) { border-right: none; }
+      .skill-block:nth-last-child(-n+3) { border-bottom: 1px solid var(--line); }
+      .skill-block:nth-last-child(-n+2) { border-bottom: none; }
+    }
+
+    @media (max-width: 560px) {
+      .skill-grid { grid-template-columns: 1fr; }
+      .skill-block { border-right: none !important; }
+      .skill-block { border-bottom: 1px solid var(--line) !important; }
+      .skill-block:last-child { border-bottom: none !important; }
+    }
+
+    /* ============ EXPERIENCE ============ */
+    .exp-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .exp {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 60px;
+      padding: 36px 0;
+      border-top: 1px solid var(--line);
+      transition: background 0.3s ease;
+    }
+
+    .exp:hover { background: rgba(214, 163, 92, 0.025); }
+
+    .exp:last-child { border-bottom: 1px solid var(--line); }
+
+    .exp-when {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      padding-top: 6px;
+    }
+
+    .exp-role {
+      font-family: var(--display);
+      font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 4px;
+    }
+
+    .exp-org {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+
+    .exp ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .exp li {
+      position: relative;
+      padding-left: 22px;
+      margin-bottom: 10px;
+      color: var(--text-dim);
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    .exp li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.7em;
+      width: 12px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    @media (max-width: 760px) {
+      .exp { grid-template-columns: 1fr; gap: 16px; }
+    }
+
+    /* ============ EDU + CERTS ============ */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      padding: 36px 32px;
+    }
+
+    .panel-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title span:last-child {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .edu-item {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .edu-item:last-child { border-bottom: none; }
+
+    .edu-school {
+      font-family: var(--display);
+      font-size: 1.3rem;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .edu-degree {
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .edu-date {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .cert-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .cert-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--text);
+      font-size: 0.98rem;
+    }
+    .cert-list li:last-child { border-bottom: none; }
+
+    .cert-list li::after {
+      content: "✓";
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    @media (max-width: 760px) {
+      .two-col { grid-template-columns: 1fr; gap: 32px; }
+    }
+
+    /* ============ PROJECTS ============ */
+    .proj-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .proj {
+      background: var(--bg);
+      padding: 36px 32px;
+      transition: background 0.3s ease;
+      position: relative;
+    }
+
+    .proj:hover { background: var(--bg-elev); }
+
+    .proj-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .proj h3 {
+      font-family: var(--display);
+      font-size: 1.55rem;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .proj p {
+      color: var(--text-dim);
+      font-size: 0.96rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 760px) {
+      .proj-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ============ CONTACT ============ */
+    .contact-section {
+      padding: 140px 0 100px;
+      text-align: center;
+    }
+
+    .contact-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 28px;
+    }
+
+    .contact-headline {
+      font-family: var(--display);
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.015em;
+      color: var(--text);
+      max-width: 800px;
+      margin: 0 auto 44px;
+    }
+
+    .contact-headline em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .contact-email {
+      font-family: var(--display);
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      color: var(--accent);
+      border-bottom: 1px solid var(--accent-dim);
+      padding-bottom: 6px;
+      transition: color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .contact-email:hover {
+      color: var(--text);
+      border-color: var(--text);
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+      margin-top: 48px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .contact-links a {
+      color: var(--text-dim);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .contact-links a:hover { color: var(--accent); }
+
+    .contact-links .arr {
+      transition: transform 0.25s ease;
+      display: inline-block;
+    }
+
+    .contact-links a:hover .arr {
+      transform: translate(2px, -2px);
+    }
+
+    /* ============ FOOTER ============ */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 32px 0;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (max-width: 600px) {
+      footer {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+    }
+
+    /* ============ REVEAL ON SCROLL ============ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
 
 <body>
-  <main class="container">
-    <header>
-      <p class="eyebrow">6DOF Modeling & Simulation Engineer</p>
+  <div class="bg-grid"></div>
 
-      <h1>David Tan</h1>
-
-      <p class="subtitle">
-        Software engineer focused on 6DOF missile simulation, flight dynamics,
-        autopilot control logic, Monte Carlo analysis, C++, Python, Java,
-        Linux/Unix, and defense software engineering workflows.
-      </p>
-
-      <div class="button-row">
-        <a class="button primary" href="resume.pdf">Download Resume</a>
-        <a class="button" href="mailto:david.k.tan2@gmail.com">Email Me</a>
-        <a class="button" href="https://github.com/skytruong90">GitHub</a>
-        <a class="button" href="https://www.linkedin.com/in/dtan90">LinkedIn</a>
-      </div>
-    </header>
-
-    <section>
-      <h2>About</h2>
-
-      <p>
-        I am a software engineer specializing in modeling and simulation for
-        aerospace and defense systems. My work focuses on high-fidelity 6DOF
-        missile simulation, flight dynamics, guidance and control logic,
-        simulation validation, and Linux-based engineering workflows.
-      </p>
-
-      <br />
-
-      <p>
-        I have experience developing and supporting C++ and Python simulation
-        software, integrating autopilot and guidance logic, running Monte Carlo
-        analyses, troubleshooting simulation behavior, and improving technical
-        workflows used by engineering teams.
-      </p>
-    </section>
-
-    <section>
-      <h2>Core Skills</h2>
-
-      <div class="tag-list">
-        <span class="tag">C++</span>
-        <span class="tag">Python</span>
-        <span class="tag">Java</span>
-        <span class="tag">Linux/Unix</span>
-        <span class="tag">6DOF Flight Dynamics</span>
-        <span class="tag">Missile Simulation</span>
-        <span class="tag">Monte Carlo Analysis</span>
-        <span class="tag">Guidance & Control</span>
-        <span class="tag">Autopilot Logic</span>
-        <span class="tag">Object-Oriented Design</span>
-        <span class="tag">GitLab CI/CD</span>
-        <span class="tag">Jenkins</span>
-        <span class="tag">Docker</span>
-        <span class="tag">Agile Development</span>
-      </div>
-    </section>
-
-    <section>
-      <h2>Experience</h2>
-
-      <div class="item">
-        <h3>6DOF Modeling & Simulation Engineer</h3>
-        <p class="muted">i3 | Mar 2026 - Current</p>
-
-        <ul>
-          <li>
-            Develop and validate high-fidelity 6DOF missile simulation models
-            using C++, including autopilot control logic and integration of
-            guidance, sensor, and flight dynamics components.
-          </li>
-          <li>
-            Support modeling and simulation work for defense programs involving
-            LRPM, Hydra-70, and APKWS-related simulation efforts.
-          </li>
-          <li>
-            Execute verification and validation simulation studies by translating
-            requirements into testable scenarios and running Monte Carlo analyses.
-          </li>
-          <li>
-            Collaborate with engineering teams to refine model assumptions,
-            troubleshoot simulation issues, and align simulation results with
-            system requirements.
-          </li>
-        </ul>
-      </div>
-
-      <div class="item">
-        <h3>Software Engineer</h3>
-        <p class="muted">ALKU | Sep 2024 - Jan 2026 | Hill AFB, UT</p>
-
-        <ul>
-          <li>
-            Engineered high-fidelity 6DOF missile flight dynamics simulations
-            using C++ and Python in support of U.S. Air Force programs.
-          </li>
-          <li>
-            Applied numerical integration and sensor modeling to improve
-            trajectory prediction and strengthen confidence in performance
-            assessments.
-          </li>
-          <li>
-            Diagnosed and resolved simulation inconsistencies by analyzing
-            flight behavior and refining model assumptions.
-          </li>
-          <li>
-            Improved integration and release workflows by implementing GitLab
-            CI/CD pipelines using YAML.
-          </li>
-        </ul>
-      </div>
-
-      <div class="item">
-        <h3>Software Engineer II</h3>
-        <p class="muted">Space Dynamics Laboratory | Jan 2023 - Sep 2024 | Logan, UT</p>
-
-        <ul>
-          <li>
-            Implemented 6DOF missile simulation components using C++ and Python
-            within existing flight dynamics frameworks.
-          </li>
-          <li>
-            Supported U.S. Air Force programs by contributing to trajectory
-            prediction, physics-based modeling, and numerical methods.
-          </li>
-          <li>
-            Assisted with integration and verification of simulation models by
-            analyzing outputs and identifying inconsistencies in system behavior.
-          </li>
-        </ul>
-      </div>
-
-      <div class="item">
-        <h3>Computer Scientist Intern</h3>
-        <p class="muted">Bowie State University | Jun 2022 - Aug 2022 | Remote</p>
-
-        <ul>
-          <li>
-            Conducted cybersecurity research in a distributed systems REU program.
-          </li>
-          <li>
-            Designed and executed simulated network attacks to support traffic
-            analysis, anomaly modeling, and threat detection research.
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <div class="grid">
-      <section>
-        <h2>Education</h2>
-
-        <div class="item">
-          <h3>Georgia Institute of Technology</h3>
-          <p class="muted">M.S. Computer Science</p>
-          <p>Expected Jul 2027</p>
-        </div>
-
-        <div class="item">
-          <h3>Louisiana State University Shreveport</h3>
-          <p class="muted">MBA, Data Analytics Concentration</p>
-          <p>Dec 2023</p>
-        </div>
-
-        <div class="item">
-          <h3>Valdosta State University</h3>
-          <p class="muted">B.S. Computer Science</p>
-          <p>Dec 2022</p>
-        </div>
-      </section>
-
-      <section>
-        <h2>Certifications</h2>
-
-        <ul>
-          <li>CompTIA Security+</li>
-          <li>AWS Solutions Architect</li>
-          <li>Certified Kubernetes Administrator</li>
-          <li>Google Cloud Architect</li>
-          <li>CSEP</li>
-        </ul>
-      </section>
+  <!-- TOP STATUS BAR -->
+  <div class="topbar">
+    <div class="left">
+      <span class="dot"></span>
+      <span>David Tan</span>
+      <span class="hide-mob">— 6DOF M&amp;S Engineer</span>
     </div>
+    <div class="right">
+      <a href="#about">About</a>
+      <a href="#experience" class="hide-mob">Experience</a>
+      <a href="#projects" class="hide-mob">Work</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
 
-    <section>
-      <h2>Projects</h2>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <!-- Trajectory decoration -->
+      <svg class="traj" viewBox="0 0 540 540" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- Axis grid -->
+        <line class="grid-line" x1="60"  y1="480" x2="500" y2="480" />
+        <line class="grid-line" x1="60"  y1="60"  x2="60"  y2="480" />
+        <line class="grid-line" x1="60"  y1="380" x2="500" y2="380" />
+        <line class="grid-line" x1="60"  y1="280" x2="500" y2="280" />
+        <line class="grid-line" x1="60"  y1="180" x2="500" y2="180" />
+        <line class="grid-line" x1="160" y1="60"  x2="160" y2="480" />
+        <line class="grid-line" x1="260" y1="60"  x2="260" y2="480" />
+        <line class="grid-line" x1="360" y1="60"  x2="360" y2="480" />
+        <line class="grid-line" x1="460" y1="60"  x2="460" y2="480" />
 
-      <div class="item">
-        <h3>LRPM Kinematic Guidance Model Development</h3>
+        <!-- Trajectory arc -->
+        <path d="M 60 480 Q 220 60 500 240" />
 
-        <p>
-          Supported C++ modeling work for LRPM kinematic guidance models,
-          including course-based, heading-based, and roll-based model variants.
-          Focus areas included model structure, generated definition variables,
-          simulation rebuilds, and debugging integration issues.
-        </p>
+        <!-- End marker -->
+        <circle class="marker" cx="500" cy="240" r="3" />
+        <circle cx="500" cy="240" r="10" fill="none" stroke="var(--accent)" stroke-width="0.5" opacity="0.6" />
+
+        <!-- Labels -->
+        <text x="60"  y="500">T=0</text>
+        <text x="478" y="225">IMPACT</text>
+        <text x="44"  y="60"  transform="rotate(-90 44 60)">ALT</text>
+        <text x="455" y="500">RANGE</text>
+      </svg>
+
+      <div class="hero-meta">
+        <span>34.7304° N / 86.5861° W</span>
+        <span class="tick"></span>
+        <span>Huntsville, AL</span>
+        <span class="tick"></span>
+        <span>Available for collaboration</span>
       </div>
 
-      <div class="item">
-        <h3>6DOF Missile Simulation and Flight Dynamics</h3>
+      <h1>David <em>Tan</em></h1>
 
-        <p>
-          Developed and supported missile simulation components involving
-          high-fidelity flight dynamics, numerical modeling, trajectory
-          prediction, and integration of guidance and sensor behavior.
-        </p>
-      </div>
-
-      <div class="item">
-        <h3>Monte Carlo Simulation and V&V Workflows</h3>
-
-        <p>
-          Ran simulation studies to evaluate system performance, identify model
-          discrepancies, validate expected behavior, and improve confidence in
-          mission-critical simulation results.
-        </p>
-      </div>
-
-      <div class="item">
-        <h3>CI/CD and Engineering Tooling</h3>
-
-        <p>
-          Supported development workflows using GitLab CI/CD, Jenkins, Docker,
-          Linux/Unix environments, and scripting to improve build reliability and
-          iteration speed.
-        </p>
-      </div>
-    </section>
-
-    <section>
-      <h2>Leadership</h2>
-
-      <ul>
-        <li>
-          Experienced supporting cross-functional integration between software,
-          simulation, and mission operations teams in defense programs.
-        </li>
-        <li>
-          Mentor engineers through code reviews, design discussions, debugging
-          support, and simulation test strategies.
-        </li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Contact</h2>
-
-      <p>
-        Email:
-        <a href="mailto:david.k.tan2@gmail.com">david.k.tan2@gmail.com</a>
-        <br />
-
-        GitHub:
-        <a href="https://github.com/skytruong90">github.com/skytruong90</a>
-        <br />
-
-        LinkedIn:
-        <a href="https://www.linkedin.com/in/dtan90">
-          linkedin.com/in/dtan90
-        </a>
+      <p class="hero-sub">
+        Engineer building high-fidelity <strong>6DOF missile simulations</strong> —
+        flight dynamics, guidance &amp; control logic, autopilot integration,
+        and Monte Carlo verification &amp; validation for U.S. defense programs.
       </p>
-    </section>
 
-    <footer>
-      © 2026 David Tan. Built as a simple résumé website.
-    </footer>
-  </main>
+      <div class="btn-row">
+        <a class="btn primary" href="resume.pdf">
+          Download Résumé
+          <span class="arrow">→</span>
+        </a>
+        <a class="btn" href="mailto:david.k.tan2@gmail.com">Get in Touch</a>
+        <a class="btn" href="https://github.com/skytruong90" target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="btn" href="https://www.linkedin.com/in/dtan90" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="reveal">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-index">§ 01 — About</div>
+        <h2 class="section-title">Modeling the <em>physics</em> behind real systems.</h2>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-aside">
+          <div><span>ROLE</span><span>6DOF M&amp;S Engineer</span></div>
+          <div><span>FOCUS</span><span>Flight Dynamics · GNC</span></div>
+          <div><span>STACK</span><span>C++ · Python · Linux</span></div>
+          <div><span>DOMAIN</span><span>Defense / Aerospace</span></div>
+          <div><span>CLEARANCE</span><span>U.S. Citizen</span></div>
+        </div>
+
+        <div class="about-body">
+          <p>
+            I'm a software engineer specializing in modeling and simulation for
+            aerospace and defense systems. My day-to-day centers on
+            <strong>high-fidelity 6DOF missile simulation</strong>: flight
+            dynamics, guidance &amp; control logic, simulation validation, and
+            the Linux-based engineering workflows that hold it all together.
+          </p>
+          <p>
+            I build and support C++ and Python simulation software, integrate
+            autopilot and guidance logic, run <strong>Monte Carlo analyses</strong>,
+            chase down simulation behavior that doesn't match expectations, and
+            sharpen the tooling that engineering teams rely on every day.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="reveal">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-index">§ 02 — Capabilities</div>
+        <h2 class="section-title">Tools of the <em>trade</em>.</h2>
+      </div>
+
+      <div class="skill-grid">
+        <div class="skill-block">
+          <div class="skill-label">Languages</div>
+          <ul>
+            <li>C++</li>
+            <li>Python</li>
+            <li>Java</li>
+            <li>Bash / Shell</li>
+          </ul>
+        </div>
+
+        <div class="skill-block">
+          <div class="skill-label">Domain</div>
+          <ul>
+            <li>6DOF Flight Dynamics</li>
+            <li>Missile Simulation</li>
+            <li>Guidance &amp; Control</li>
+            <li>Autopilot Logic</li>
+            <li>Monte Carlo Analysis</li>
+          </ul>
+        </div>
+
+        <div class="skill-block">
+          <div class="skill-label">Platforms</div>
+          <ul>
+            <li>Linux / Unix</li>
+            <li>Docker</li>
+            <li>GitLab CI/CD</li>
+            <li>Jenkins</li>
+          </ul>
+        </div>
+
+        <div class="skill-block">
+          <div class="skill-label">Methods</div>
+          <ul>
+            <li>Verification &amp; Validation</li>
+            <li>Numerical Integration</li>
+            <li>Sensor Modeling</li>
+            <li>Object-Oriented Design</li>
+          </ul>
+        </div>
+
+        <div class="skill-block">
+          <div class="skill-label">Process</div>
+          <ul>
+            <li>Agile Development</li>
+            <li>Code Review</li>
+            <li>Requirements Translation</li>
+            <li>Cross-team Collaboration</li>
+          </ul>
+        </div>
+
+        <div class="skill-block">
+          <div class="skill-label">Programs</div>
+          <ul>
+            <li>LRPM</li>
+            <li>APKWS</li>
+            <li>Hydra-70</li>
+            <li>USAF Programs</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience" class="reveal">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-index">§ 03 — Experience</div>
+        <h2 class="section-title">Where I've <em>worked</em>.</h2>
+      </div>
+
+      <div class="exp-list">
+        <article class="exp">
+          <div class="exp-when">
+            Mar 2026 —<br/>Present<br/>
+            <span style="color: var(--accent);">Current</span>
+          </div>
+          <div>
+            <h3 class="exp-role">6DOF Modeling &amp; Simulation Engineer</h3>
+            <div class="exp-org">i3 · Huntsville, AL</div>
+            <ul>
+              <li>Develop and validate high-fidelity 6DOF missile simulation models in C++, including autopilot control logic and integration of guidance, sensor, and flight dynamics components.</li>
+              <li>Support modeling and simulation work for defense programs involving LRPM, Hydra-70, and APKWS-related simulation efforts.</li>
+              <li>Execute verification and validation studies by translating requirements into testable scenarios and running Monte Carlo analyses.</li>
+              <li>Collaborate with engineering teams to refine model assumptions, troubleshoot simulation issues, and align results with system requirements.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="exp">
+          <div class="exp-when">Sep 2024 —<br/>Jan 2026</div>
+          <div>
+            <h3 class="exp-role">Software Engineer</h3>
+            <div class="exp-org">ALKU · Hill AFB, UT</div>
+            <ul>
+              <li>Engineered high-fidelity 6DOF missile flight dynamics simulations in C++ and Python in support of U.S. Air Force programs.</li>
+              <li>Applied numerical integration and sensor modeling to improve trajectory prediction and strengthen confidence in performance assessments.</li>
+              <li>Diagnosed and resolved simulation inconsistencies by analyzing flight behavior and refining model assumptions.</li>
+              <li>Improved integration and release workflows by implementing GitLab CI/CD pipelines using YAML.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="exp">
+          <div class="exp-when">Jan 2023 —<br/>Sep 2024</div>
+          <div>
+            <h3 class="exp-role">Software Engineer II</h3>
+            <div class="exp-org">Space Dynamics Laboratory · Logan, UT</div>
+            <ul>
+              <li>Implemented 6DOF missile simulation components in C++ and Python within existing flight dynamics frameworks.</li>
+              <li>Supported U.S. Air Force programs by contributing to trajectory prediction, physics-based modeling, and numerical methods.</li>
+              <li>Assisted integration and verification of simulation models by analyzing outputs and identifying inconsistencies in system behavior.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="exp">
+          <div class="exp-when">Jun 2022 —<br/>Aug 2022</div>
+          <div>
+            <h3 class="exp-role">Computer Scientist Intern</h3>
+            <div class="exp-org">Bowie State University · Remote</div>
+            <ul>
+              <li>Conducted cybersecurity research in a distributed systems REU program.</li>
+              <li>Designed and executed simulated network attacks to support traffic analysis, anomaly modeling, and threat detection research.</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDU + CERTS -->
+  <section id="credentials" class="reveal">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-index">§ 04 — Credentials</div>
+        <h2 class="section-title">Education &amp; <em>certifications</em>.</h2>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-title">
+            <span>Education</span>
+            <span>03 / 03</span>
+          </div>
+
+          <div class="edu-item">
+            <div class="edu-school">Georgia Institute of Technology</div>
+            <div class="edu-degree">M.S. Computer Science</div>
+            <div class="edu-date">Expected Jul 2027</div>
+          </div>
+
+          <div class="edu-item">
+            <div class="edu-school">LSU Shreveport</div>
+            <div class="edu-degree">MBA, Data Analytics Concentration</div>
+            <div class="edu-date">Dec 2023</div>
+          </div>
+
+          <div class="edu-item">
+            <div class="edu-school">Valdosta State University</div>
+            <div class="edu-degree">B.S. Computer Science</div>
+            <div class="edu-date">Dec 2022</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">
+            <span>Certifications</span>
+            <span>05 / 05</span>
+          </div>
+
+          <ul class="cert-list">
+            <li>CompTIA Security+</li>
+            <li>AWS Solutions Architect</li>
+            <li>Certified Kubernetes Administrator</li>
+            <li>Google Cloud Architect</li>
+            <li>CSEP</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="reveal">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-index">§ 05 — Selected Work</div>
+        <h2 class="section-title">Things I've <em>built</em>.</h2>
+      </div>
+
+      <div class="proj-grid">
+        <div class="proj">
+          <div class="proj-num">01 / LRPM</div>
+          <h3>Kinematic Guidance Model Development</h3>
+          <p>
+            C++ modeling work for LRPM kinematic guidance models — including
+            course-based, heading-based, and roll-based variants. Focus on
+            model structure, generated definition variables, simulation
+            rebuilds, and debugging integration issues across model variants.
+          </p>
+        </div>
+
+        <div class="proj">
+          <div class="proj-num">02 / FLIGHT DYNAMICS</div>
+          <h3>6DOF Missile Simulation</h3>
+          <p>
+            Developed and supported missile simulation components covering
+            high-fidelity flight dynamics, numerical modeling, trajectory
+            prediction, and integration of guidance and sensor behavior into
+            unified simulation frameworks.
+          </p>
+        </div>
+
+        <div class="proj">
+          <div class="proj-num">03 / V&amp;V</div>
+          <h3>Monte Carlo &amp; Validation Workflows</h3>
+          <p>
+            Ran simulation studies to evaluate system performance, identify
+            model discrepancies, validate expected behavior, and build
+            confidence in mission-critical simulation results across thousands
+            of stochastic runs.
+          </p>
+        </div>
+
+        <div class="proj">
+          <div class="proj-num">04 / TOOLING</div>
+          <h3>CI/CD &amp; Engineering Tooling</h3>
+          <p>
+            Supported development workflows using GitLab CI/CD, Jenkins,
+            Docker, Linux/Unix environments, and scripting — improving build
+            reliability and iteration speed for simulation engineers across
+            the team.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact-section reveal">
+    <div class="container">
+      <div class="contact-eyebrow">§ 06 — Contact</div>
+      <h2 class="contact-headline">
+        Let's <em>talk</em> simulation, flight dynamics, or your next defense program.
+      </h2>
+      <a class="contact-email" href="mailto:david.k.tan2@gmail.com">david.k.tan2@gmail.com</a>
+
+      <div class="contact-links">
+        <a href="https://github.com/skytruong90" target="_blank" rel="noopener">
+          GitHub <span class="arr">↗</span>
+        </a>
+        <a href="https://www.linkedin.com/in/dtan90" target="_blank" rel="noopener">
+          LinkedIn <span class="arr">↗</span>
+        </a>
+        <a href="resume.pdf">
+          Résumé <span class="arr">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <span>© 2026 David Tan</span>
+      <span>Huntsville, AL · 34.7304° N / 86.5861° W</span>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+  </script>
 </body>
 </html>
