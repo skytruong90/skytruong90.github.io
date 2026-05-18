@@ -8,7 +8,7 @@
 
   <meta
     name="description"
-    content="David Tan — 6DOF Modeling and Simulation Engineer. High-fidelity missile simulation, flight dynamics, guidance & control, Monte Carlo analysis. C++, Python, Linux. Based in Huntsville, AL."
+    content="David K. Tan — 6DOF Modeling and Simulation Engineer. High-fidelity missile simulation, flight dynamics, guidance & control, Monte Carlo analysis. C++, Python, Linux. Based in Huntsville, AL."
   />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,13 +22,15 @@
     :root {
       --bg:        #0b0c0e;
       --bg-elev:   #111316;
+      --bg-elev-2: #161a1f;
       --line:      rgba(255, 255, 255, 0.08);
       --line-2:    rgba(255, 255, 255, 0.14);
       --text:      #e9e6df;
       --text-dim:  #a4a097;
       --muted:     #6c6960;
-      --accent:    #d6a35c;  /* instrument amber */
+      --accent:    #d6a35c;
       --accent-dim:#8a6a3a;
+      --accent-glow: rgba(214, 163, 92, 0.18);
       --display:   "Instrument Serif", "Cormorant Garamond", Georgia, serif;
       --sans:      "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --mono:      "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -50,18 +52,21 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Subtle grain overlay */
+    ::selection {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
     body::before {
       content: "";
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: 100;
-      opacity: 0.035;
+      opacity: 0.04;
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
     }
 
-    /* Engineering grid background, very subtle */
     .bg-grid {
       position: fixed;
       inset: 0;
@@ -79,10 +84,22 @@
     a { color: var(--accent); text-decoration: none; }
     a:hover { color: var(--text); }
 
-    /* ============ TOP STATUS BAR ============ */
+    /* SCROLL PROGRESS */
+    .scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: var(--accent);
+      z-index: 200;
+      transition: width 0.08s linear;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    /* TOPBAR */
     .topbar {
       position: fixed;
-      top: 0; left: 0; right: 0;
+      top: 2px; left: 0; right: 0;
       z-index: 50;
       display: flex;
       justify-content: space-between;
@@ -93,9 +110,9 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-dim);
-      background: linear-gradient(to bottom, rgba(11,12,14,0.85), rgba(11,12,14,0));
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: linear-gradient(to bottom, rgba(11,12,14,0.88), rgba(11,12,14,0));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .topbar .left, .topbar .right {
@@ -107,7 +124,7 @@
     .topbar .dot {
       width: 6px; height: 6px; border-radius: 50%;
       background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
+      box-shadow: 0 0 10px var(--accent);
       animation: pulse 2.2s ease-in-out infinite;
     }
 
@@ -116,7 +133,7 @@
       50%      { opacity: 0.55; transform: scale(0.85); }
     }
 
-    .topbar a { color: var(--text-dim); }
+    .topbar a { color: var(--text-dim); transition: color 0.2s ease; }
     .topbar a:hover { color: var(--accent); }
 
     @media (max-width: 720px) {
@@ -124,7 +141,6 @@
       .topbar .hide-mob { display: none; }
     }
 
-    /* ============ CONTAINER ============ */
     .container {
       position: relative;
       z-index: 1;
@@ -137,7 +153,7 @@
       .container { padding: 0 20px; }
     }
 
-    /* ============ HERO ============ */
+    /* HERO */
     .hero {
       min-height: 100vh;
       display: flex;
@@ -229,40 +245,38 @@
       background: var(--text);
       color: var(--bg);
       border-color: var(--text);
+      transform: translateY(-2px);
     }
 
     .btn.primary {
       background: var(--accent);
       color: var(--bg);
       border-color: var(--accent);
+      transition: all 0.25s ease, box-shadow 0.35s ease;
     }
 
     .btn.primary:hover {
       background: var(--text);
       border-color: var(--text);
+      box-shadow: 0 8px 24px var(--accent-glow);
     }
 
-    .btn .arrow {
-      transition: transform 0.25s ease;
-    }
+    .btn .arrow { transition: transform 0.25s ease; }
+    .btn:hover .arrow { transform: translateX(3px); }
 
-    .btn:hover .arrow {
-      transform: translateX(3px);
-    }
-
-    /* Trajectory SVG decoration */
+    /* Trajectory SVG */
     .traj {
       position: absolute;
       top: 18%;
       right: -100px;
       width: 540px;
       height: 540px;
-      opacity: 0.25;
+      opacity: 0.28;
       pointer-events: none;
       z-index: 0;
     }
 
-    .traj path {
+    .traj path.flight {
       stroke: var(--accent);
       stroke-width: 1;
       fill: none;
@@ -276,9 +290,7 @@
       stroke-width: 0.5;
     }
 
-    .traj .marker {
-      fill: var(--accent);
-    }
+    .traj .marker { fill: var(--accent); }
 
     .traj text {
       font-family: var(--mono);
@@ -287,21 +299,82 @@
       letter-spacing: 0.1em;
     }
 
-    @keyframes draw {
-      to { stroke-dashoffset: 0; }
-    }
-
+    @keyframes draw { to { stroke-dashoffset: 0; } }
     @keyframes fade-up {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 900px) {
-      .traj { display: none; }
+    @media (max-width: 900px) { .traj { display: none; } }
+
+    /* HIGHLIGHTS STRIP */
+    .highlights {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--bg-elev);
+      position: relative;
+      z-index: 1;
     }
 
-    /* ============ SECTION SHARED ============ */
-    section {
+    .hl-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .hl {
+      padding: 36px 28px;
+      border-right: 1px solid var(--line);
+      transition: background 0.3s ease;
+    }
+
+    .hl:last-child { border-right: none; }
+    .hl:hover { background: var(--bg-elev-2); }
+
+    .hl-num {
+      font-family: var(--display);
+      font-size: clamp(2.4rem, 4.5vw, 3.4rem);
+      line-height: 1;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .hl-num em {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .hl-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .hl-label strong {
+      display: block;
+      color: var(--text-dim);
+      margin-bottom: 2px;
+    }
+
+    @media (max-width: 800px) {
+      .hl-grid { grid-template-columns: repeat(2, 1fr); }
+      .hl:nth-child(2) { border-right: none; }
+      .hl:nth-child(1), .hl:nth-child(2) { border-bottom: 1px solid var(--line); }
+    }
+
+    @media (max-width: 480px) {
+      .hl-grid { grid-template-columns: 1fr; }
+      .hl { border-right: none; border-bottom: 1px solid var(--line); }
+      .hl:last-child { border-bottom: none; }
+    }
+
+    /* SECTION SHARED */
+    section.std {
       padding: 110px 0;
       position: relative;
       border-top: 1px solid var(--line);
@@ -347,7 +420,7 @@
     }
 
     @media (max-width: 760px) {
-      section { padding: 80px 0; }
+      section.std { padding: 80px 0; }
       .section-head {
         grid-template-columns: 1fr;
         gap: 18px;
@@ -355,16 +428,14 @@
       }
     }
 
-    /* ============ ABOUT ============ */
+    /* ABOUT */
     .about-grid {
       display: grid;
       grid-template-columns: 200px 1fr;
       gap: 60px;
     }
 
-    .about-body {
-      max-width: 720px;
-    }
+    .about-body { max-width: 720px; }
 
     .about-body p {
       font-size: 1.18rem;
@@ -374,11 +445,7 @@
     }
 
     .about-body p:last-child { margin-bottom: 0; }
-
-    .about-body strong {
-      color: var(--text);
-      font-weight: 500;
-    }
+    .about-body strong { color: var(--text); font-weight: 500; }
 
     .about-aside {
       font-family: var(--mono);
@@ -399,29 +466,27 @@
       letter-spacing: 0.14em;
     }
 
-    .about-aside div span:last-child {
-      color: var(--text);
-    }
+    .about-aside div span:last-child { color: var(--text); }
 
     @media (max-width: 760px) {
       .about-grid { grid-template-columns: 1fr; gap: 36px; }
     }
 
-    /* ============ SKILLS ============ */
+    /* SKILLS */
     .skill-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0;
       border: 1px solid var(--line);
-      border-radius: 0;
     }
 
     .skill-block {
       padding: 32px 28px;
       border-right: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
+      transition: background 0.3s ease;
     }
 
+    .skill-block:hover { background: var(--bg-elev); }
     .skill-block:nth-child(3n) { border-right: none; }
     .skill-block:nth-last-child(-n+3) { border-bottom: none; }
 
@@ -434,20 +499,19 @@
       margin-bottom: 18px;
     }
 
-    .skill-block ul {
-      list-style: none;
-      padding: 0;
-    }
+    .skill-block ul { list-style: none; padding: 0; }
 
     .skill-block li {
       font-size: 0.98rem;
       color: var(--text);
       padding: 5px 0;
-      border-bottom: 1px dashed transparent;
-      transition: color 0.2s ease;
+      transition: color 0.2s ease, transform 0.2s ease;
     }
 
-    .skill-block li:hover { color: var(--accent); }
+    .skill-block li:hover {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
 
     @media (max-width: 900px) {
       .skill-grid { grid-template-columns: repeat(2, 1fr); }
@@ -459,16 +523,12 @@
 
     @media (max-width: 560px) {
       .skill-grid { grid-template-columns: 1fr; }
-      .skill-block { border-right: none !important; }
-      .skill-block { border-bottom: 1px solid var(--line) !important; }
+      .skill-block { border-right: none !important; border-bottom: 1px solid var(--line) !important; }
       .skill-block:last-child { border-bottom: none !important; }
     }
 
-    /* ============ EXPERIENCE ============ */
-    .exp-list {
-      display: flex;
-      flex-direction: column;
-    }
+    /* EXPERIENCE */
+    .exp-list { display: flex; flex-direction: column; }
 
     .exp {
       display: grid;
@@ -480,7 +540,6 @@
     }
 
     .exp:hover { background: rgba(214, 163, 92, 0.025); }
-
     .exp:last-child { border-bottom: 1px solid var(--line); }
 
     .exp-when {
@@ -490,6 +549,23 @@
       color: var(--text-dim);
       text-transform: uppercase;
       padding-top: 6px;
+    }
+
+    .exp-when .current {
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .exp-when .current::before {
+      content: "";
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+      animation: pulse 2.2s ease-in-out infinite;
     }
 
     .exp-role {
@@ -509,10 +585,7 @@
       margin-bottom: 18px;
     }
 
-    .exp ul {
-      list-style: none;
-      padding: 0;
-    }
+    .exp ul { list-style: none; padding: 0; }
 
     .exp li {
       position: relative;
@@ -537,7 +610,7 @@
       .exp { grid-template-columns: 1fr; gap: 16px; }
     }
 
-    /* ============ EDU + CERTS ============ */
+    /* EDU + CERTS */
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -547,7 +620,10 @@
     .panel {
       border: 1px solid var(--line);
       padding: 36px 32px;
+      transition: border-color 0.3s ease;
     }
+
+    .panel:hover { border-color: var(--line-2); }
 
     .panel-title {
       font-family: var(--mono);
@@ -561,10 +637,7 @@
       align-items: center;
     }
 
-    .panel-title span:last-child {
-      color: var(--muted);
-      font-size: 10px;
-    }
+    .panel-title span:last-child { color: var(--muted); font-size: 10px; }
 
     .edu-item {
       padding: 18px 0;
@@ -594,10 +667,7 @@
       text-transform: uppercase;
     }
 
-    .cert-list {
-      list-style: none;
-      padding: 0;
-    }
+    .cert-list { list-style: none; padding: 0; }
 
     .cert-list li {
       display: flex;
@@ -621,7 +691,7 @@
       .two-col { grid-template-columns: 1fr; gap: 32px; }
     }
 
-    /* ============ PROJECTS ============ */
+    /* PROJECTS */
     .proj-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -633,11 +703,21 @@
     .proj {
       background: var(--bg);
       padding: 36px 32px;
-      transition: background 0.3s ease;
+      transition: background 0.35s ease;
       position: relative;
     }
 
+    .proj::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0;
+      width: 0; height: 2px;
+      background: var(--accent);
+      transition: width 0.4s ease;
+    }
+
     .proj:hover { background: var(--bg-elev); }
+    .proj:hover::before { width: 100%; }
 
     .proj-num {
       font-family: var(--mono);
@@ -666,11 +746,151 @@
       .proj-grid { grid-template-columns: 1fr; }
     }
 
-    /* ============ CONTACT ============ */
+    /* REFERENCES */
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .ref {
+      border: 1px solid var(--line);
+      padding: 32px 28px 28px;
+      position: relative;
+      background: var(--bg);
+      transition: all 0.35s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ref:hover {
+      background: var(--bg-elev);
+      border-color: var(--accent-dim);
+      transform: translateY(-4px);
+    }
+
+    .ref-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+      border: 1px solid var(--accent-dim);
+      padding: 4px 8px;
+      background: rgba(214, 163, 92, 0.05);
+    }
+
+    .ref-inst {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 28px;
+      max-width: 220px;
+      line-height: 1.6;
+    }
+
+    .ref-quote {
+      font-family: var(--display);
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.35;
+      margin-bottom: 32px;
+      flex-grow: 1;
+      position: relative;
+    }
+
+    .ref-quote::before {
+      content: "\201C";
+      font-family: var(--display);
+      font-size: 3rem;
+      line-height: 1;
+      color: var(--accent);
+      position: absolute;
+      left: -8px;
+      top: -18px;
+      opacity: 0.5;
+    }
+
+    .ref-author {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+      margin-bottom: 20px;
+    }
+
+    .ref-name {
+      font-family: var(--display);
+      font-size: 1.15rem;
+      color: var(--text);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+
+    .ref-title {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .ref-date {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .ref-link {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s ease;
+      align-self: flex-start;
+    }
+
+    .ref-link:hover { color: var(--accent); }
+
+    .ref-link .arr { transition: transform 0.25s ease; display: inline-block; }
+    .ref-link:hover .arr { transform: translate(3px, -3px); }
+
+    @media (max-width: 980px) {
+      .ref-grid { grid-template-columns: 1fr; gap: 20px; }
+      .ref { padding: 28px 24px 24px; }
+    }
+
+    /* CONTACT */
     .contact-section {
       padding: 140px 0 100px;
       text-align: center;
+      border-top: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
     }
+
+    .contact-section::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .contact-section > .container { position: relative; z-index: 1; }
 
     .contact-eyebrow {
       font-family: var(--mono);
@@ -720,6 +940,7 @@
       font-size: 12px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
+      flex-wrap: wrap;
     }
 
     .contact-links a {
@@ -731,16 +952,10 @@
 
     .contact-links a:hover { color: var(--accent); }
 
-    .contact-links .arr {
-      transition: transform 0.25s ease;
-      display: inline-block;
-    }
+    .contact-links .arr { transition: transform 0.25s ease; display: inline-block; }
+    .contact-links a:hover .arr { transform: translate(2px, -2px); }
 
-    .contact-links a:hover .arr {
-      transform: translate(2px, -2px);
-    }
-
-    /* ============ FOOTER ============ */
+    /* FOOTER */
     footer {
       border-top: 1px solid var(--line);
       padding: 32px 0;
@@ -749,46 +964,47 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--muted);
+    }
+
+    footer .container {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     @media (max-width: 600px) {
-      footer {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-      }
+      footer .container { flex-direction: column; text-align: center; }
     }
 
-    /* ============ REVEAL ON SCROLL ============ */
+    /* REVEAL */
     .reveal {
       opacity: 0;
       transform: translateY(24px);
       transition: opacity 0.8s ease, transform 0.8s ease;
     }
-    .reveal.in {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 
 <body>
+
+  <div class="scroll-progress" id="progress"></div>
   <div class="bg-grid"></div>
 
-  <!-- TOP STATUS BAR -->
+  <!-- TOPBAR -->
   <div class="topbar">
     <div class="left">
       <span class="dot"></span>
-      <span>David Tan</span>
+      <span>David K. Tan</span>
       <span class="hide-mob">— 6DOF M&amp;S Engineer</span>
     </div>
     <div class="right">
       <a href="#about">About</a>
       <a href="#experience" class="hide-mob">Experience</a>
       <a href="#projects" class="hide-mob">Work</a>
+      <a href="#references" class="hide-mob">References</a>
       <a href="#contact">Contact</a>
     </div>
   </div>
@@ -796,9 +1012,7 @@
   <!-- HERO -->
   <section class="hero">
     <div class="container">
-      <!-- Trajectory decoration -->
       <svg class="traj" viewBox="0 0 540 540" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <!-- Axis grid -->
         <line class="grid-line" x1="60"  y1="480" x2="500" y2="480" />
         <line class="grid-line" x1="60"  y1="60"  x2="60"  y2="480" />
         <line class="grid-line" x1="60"  y1="380" x2="500" y2="380" />
@@ -809,14 +1023,11 @@
         <line class="grid-line" x1="360" y1="60"  x2="360" y2="480" />
         <line class="grid-line" x1="460" y1="60"  x2="460" y2="480" />
 
-        <!-- Trajectory arc -->
-        <path d="M 60 480 Q 220 60 500 240" />
+        <path class="flight" d="M 60 480 Q 220 60 500 240" />
 
-        <!-- End marker -->
         <circle class="marker" cx="500" cy="240" r="3" />
-        <circle cx="500" cy="240" r="10" fill="none" stroke="var(--accent)" stroke-width="0.5" opacity="0.6" />
+        <circle cx="500" cy="240" r="10" fill="none" stroke="#d6a35c" stroke-width="0.5" opacity="0.6" />
 
-        <!-- Labels -->
         <text x="60"  y="500">T=0</text>
         <text x="478" y="225">IMPACT</text>
         <text x="44"  y="60"  transform="rotate(-90 44 60)">ALT</text>
@@ -851,8 +1062,30 @@
     </div>
   </section>
 
+  <!-- HIGHLIGHTS -->
+  <div class="highlights reveal">
+    <div class="hl-grid">
+      <div class="hl">
+        <div class="hl-num">3<em>+</em></div>
+        <div class="hl-label"><strong>Years</strong>Modeling &amp; Simulation</div>
+      </div>
+      <div class="hl">
+        <div class="hl-num">4</div>
+        <div class="hl-label"><strong>Languages</strong>C++ · Python · Java · Bash</div>
+      </div>
+      <div class="hl">
+        <div class="hl-num">3</div>
+        <div class="hl-label"><strong>Defense Programs</strong>LRPM · APKWS · Hydra-70</div>
+      </div>
+      <div class="hl">
+        <div class="hl-num">5</div>
+        <div class="hl-label"><strong>Certifications</strong>Cloud · Security · Engineering</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ABOUT -->
-  <section id="about" class="reveal">
+  <section id="about" class="std reveal">
     <div class="container">
       <div class="section-head">
         <div class="section-index">§ 01 — About</div>
@@ -888,7 +1121,7 @@
   </section>
 
   <!-- SKILLS -->
-  <section id="skills" class="reveal">
+  <section id="skills" class="std reveal">
     <div class="container">
       <div class="section-head">
         <div class="section-index">§ 02 — Capabilities</div>
@@ -961,7 +1194,7 @@
   </section>
 
   <!-- EXPERIENCE -->
-  <section id="experience" class="reveal">
+  <section id="experience" class="std reveal">
     <div class="container">
       <div class="section-head">
         <div class="section-index">§ 03 — Experience</div>
@@ -972,7 +1205,7 @@
         <article class="exp">
           <div class="exp-when">
             Mar 2026 —<br/>Present<br/>
-            <span style="color: var(--accent);">Current</span>
+            <span class="current">Current</span>
           </div>
           <div>
             <h3 class="exp-role">6DOF Modeling &amp; Simulation Engineer</h3>
@@ -1028,8 +1261,8 @@
     </div>
   </section>
 
-  <!-- EDU + CERTS -->
-  <section id="credentials" class="reveal">
+  <!-- CREDENTIALS -->
+  <section id="credentials" class="std reveal">
     <div class="container">
       <div class="section-head">
         <div class="section-index">§ 04 — Credentials</div>
@@ -1081,7 +1314,7 @@
   </section>
 
   <!-- PROJECTS -->
-  <section id="projects" class="reveal">
+  <section id="projects" class="std reveal">
     <div class="container">
       <div class="section-head">
         <div class="section-index">§ 05 — Selected Work</div>
@@ -1136,10 +1369,81 @@
     </div>
   </section>
 
+  <!-- REFERENCES -->
+  <section id="references" class="std reveal">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-index">§ 06 — References</div>
+        <h2 class="section-title">In their own <em>words</em>.</h2>
+      </div>
+
+      <div class="ref-grid">
+
+        <article class="ref">
+          <div class="ref-badge">VERIFIED</div>
+          <div class="ref-inst">Valdosta State University · College of Science &amp; Mathematics</div>
+
+          <blockquote class="ref-quote">
+            Clear in writing and effective in coding, David can communicate technical topics with ease.
+          </blockquote>
+
+          <div class="ref-author">
+            <div class="ref-name">Dr. Anurag Dasgupta</div>
+            <div class="ref-title">Associate Professor, Computer Science</div>
+            <div class="ref-date">January 21, 2022</div>
+          </div>
+
+          <a href="letters/dasgupta.pdf" class="ref-link" target="_blank" rel="noopener">
+            View full letter <span class="arr">↗</span>
+          </a>
+        </article>
+
+        <article class="ref">
+          <div class="ref-badge">VERIFIED</div>
+          <div class="ref-inst">Valdosta State University · Honors College</div>
+
+          <blockquote class="ref-quote">
+            An exceptional student, motivated to excel in his discipline.
+          </blockquote>
+
+          <div class="ref-author">
+            <div class="ref-name">Michael P. Savoie</div>
+            <div class="ref-title">Dean, University Honors College</div>
+            <div class="ref-date">January 5, 2022</div>
+          </div>
+
+          <a href="letters/savoie.pdf" class="ref-link" target="_blank" rel="noopener">
+            View full letter <span class="arr">↗</span>
+          </a>
+        </article>
+
+        <article class="ref">
+          <div class="ref-badge">VERIFIED</div>
+          <div class="ref-inst">Valdosta State University · Office of Student Life</div>
+
+          <blockquote class="ref-quote">
+            David completed the Leadership Certificate Program a full semester ahead of his cohort.
+          </blockquote>
+
+          <div class="ref-author">
+            <div class="ref-name">Elizabeth Cavender</div>
+            <div class="ref-title">Coordinator, Leadership Certificate Program</div>
+            <div class="ref-date">2022</div>
+          </div>
+
+          <a href="letters/cavender.pdf" class="ref-link" target="_blank" rel="noopener">
+            View full letter <span class="arr">↗</span>
+          </a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
   <!-- CONTACT -->
   <section id="contact" class="contact-section reveal">
     <div class="container">
-      <div class="contact-eyebrow">§ 06 — Contact</div>
+      <div class="contact-eyebrow">§ 07 — Contact</div>
       <h2 class="contact-headline">
         Let's <em>talk</em> simulation, flight dynamics, or your next defense program.
       </h2>
@@ -1161,14 +1465,23 @@
 
   <!-- FOOTER -->
   <footer>
-    <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-      <span>© 2026 David Tan</span>
+    <div class="container">
+      <span>© 2026 David K. Tan</span>
       <span>Huntsville, AL · 34.7304° N / 86.5861° W</span>
     </div>
   </footer>
 
   <script>
-    // Scroll reveal
+    // Scroll progress
+    const progressEl = document.getElementById("progress");
+    window.addEventListener("scroll", () => {
+      const scrolled = window.scrollY;
+      const max = document.body.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (scrolled / max) * 100 : 0;
+      progressEl.style.width = pct + "%";
+    }, { passive: true });
+
+    // Reveal on scroll
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
