@@ -1,1 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <title>David Tan | 6DOF Modeling & Simulation Engineer</title>
+
+  <meta
+    name="description"
+    content="David Tan - 6DOF Modeling and Simulation Engineer specializing in missile simulation, flight dynamics, C++, Python, Java, Linux, Monte Carlo analysis, and defense software engineering."
+  />
+
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --border: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: clamp(2.1rem, 5vw, 3.5rem);
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--muted);
+      max-width: 800px;
+      margin-bottom: 24px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 11px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    ul {
+      padding-left: 20px;
+      margin-top: 8px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tag {
+      background: #eef2ff;
+      color: #3730a3;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .item {
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 760px) {
+      header,
+      section {
+        padding: 24px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <header>
+      <p class="eyebrow">6DOF Modeling & Simulation Engineer</p>
+
+      <h1>David Tan</h1>
+
+      <p class="subtitle">
+        Software engineer focused on 6DOF missile simulation, flight dynamics,
+        autopilot control logic, Monte Carlo analysis, C++, Python, Java,
+        Linux/Unix, and defense software engineering workflows.
+      </p>
+
+      <div class="button-row">
+        <a class="button primary" href="resume.pdf">Download Resume</a>
+        <a class="button" href="mailto:david.k.tan2@gmail.com">Email Me</a>
+        <a class="button" href="https://github.com/skytruong90">GitHub</a>
+        <a class="button" href="https://www.linkedin.com/in/dtan90">LinkedIn</a>
+      </div>
+    </header>
+
+    <section>
+      <h2>About</h2>
+
+      <p>
+        I am a software engineer specializing in modeling and simulation for
+        aerospace and defense systems. My work focuses on high-fidelity 6DOF
+        missile simulation, flight dynamics, guidance and control logic,
+        simulation validation, and Linux-based engineering workflows.
+      </p>
+
+      <br />
+
+      <p>
+        I have experience developing and supporting C++ and Python simulation
+        software, integrating autopilot and guidance logic, running Monte Carlo
+        analyses, troubleshooting simulation behavior, and improving technical
+        workflows used by engineering teams.
+      </p>
+    </section>
+
+    <section>
+      <h2>Core Skills</h2>
+
+      <div class="tag-list">
+        <span class="tag">C++</span>
+        <span class="tag">Python</span>
+        <span class="tag">Java</span>
+        <span class="tag">Linux/Unix</span>
+        <span class="tag">6DOF Flight Dynamics</span>
+        <span class="tag">Missile Simulation</span>
+        <span class="tag">Monte Carlo Analysis</span>
+        <span class="tag">Guidance & Control</span>
+        <span class="tag">Autopilot Logic</span>
+        <span class="tag">Object-Oriented Design</span>
+        <span class="tag">GitLab CI/CD</span>
+        <span class="tag">Jenkins</span>
+        <span class="tag">Docker</span>
+        <span class="tag">Agile Development</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Experience</h2>
+
+      <div class="item">
+        <h3>6DOF Modeling & Simulation Engineer</h3>
+        <p class="muted">i3 | Mar 2026 - Current</p>
+
+        <ul>
+          <li>
+            Develop and validate high-fidelity 6DOF missile simulation models
+            using C++, including autopilot control logic and integration of
+            guidance, sensor, and flight dynamics components.
+          </li>
+          <li>
+            Support modeling and simulation work for defense programs involving
+            LRPM, Hydra-70, and APKWS-related simulation efforts.
+          </li>
+          <li>
+            Execute verification and validation simulation studies by translating
+            requirements into testable scenarios and running Monte Carlo analyses.
+          </li>
+          <li>
+            Collaborate with engineering teams to refine model assumptions,
+            troubleshoot simulation issues, and align simulation results with
+            system requirements.
+          </li>
+        </ul>
+      </div>
+
+      <div class="item">
+        <h3>Software Engineer</h3>
+        <p class="muted">ALKU | Sep 2024 - Jan 2026 | Hill AFB, UT</p>
+
+        <ul>
+          <li>
+            Engineered high-fidelity 6DOF missile flight dynamics simulations
+            using C++ and Python in support of U.S. Air Force programs.
+          </li>
+          <li>
+            Applied numerical integration and sensor modeling to improve
+            trajectory prediction and strengthen confidence in performance
+            assessments.
+          </li>
+          <li>
+            Diagnosed and resolved simulation inconsistencies by analyzing
+            flight behavior and refining model assumptions.
+          </li>
+          <li>
+            Improved integration and release workflows by implementing GitLab
+            CI/CD pipelines using YAML.
+          </li>
+        </ul>
+      </div>
+
+      <div class="item">
+        <h3>Software Engineer II</h3>
+        <p class="muted">Space Dynamics Laboratory | Jan 2023 - Sep 2024 | Logan, UT</p>
+
+        <ul>
+          <li>
+            Implemented 6DOF missile simulation components using C++ and Python
+            within existing flight dynamics frameworks.
+          </li>
+          <li>
+            Supported U.S. Air Force programs by contributing to trajectory
+            prediction, physics-based modeling, and numerical methods.
+          </li>
+          <li>
+            Assisted with integration and verification of simulation models by
+            analyzing outputs and identifying inconsistencies in system behavior.
+          </li>
+        </ul>
+      </div>
+
+      <div class="item">
+        <h3>Computer Scientist Intern</h3>
+        <p class="muted">Bowie State University | Jun 2022 - Aug 2022 | Remote</p>
+
+        <ul>
+          <li>
+            Conducted cybersecurity research in a distributed systems REU program.
+          </li>
+          <li>
+            Designed and executed simulated network attacks to support traffic
+            analysis, anomaly modeling, and threat detection research.
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section>
+        <h2>Education</h2>
+
+        <div class="item">
+          <h3>Georgia Institute of Technology</h3>
+          <p class="muted">M.S. Computer Science</p>
+          <p>Expected Jul 2027</p>
+        </div>
+
+        <div class="item">
+          <h3>Louisiana State University Shreveport</h3>
+          <p class="muted">MBA, Data Analytics Concentration</p>
+          <p>Dec 2023</p>
+        </div>
+
+        <div class="item">
+          <h3>Valdosta State University</h3>
+          <p class="muted">B.S. Computer Science</p>
+          <p>Dec 2022</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Certifications</h2>
+
+        <ul>
+          <li>CompTIA Security+</li>
+          <li>AWS Solutions Architect</li>
+          <li>Certified Kubernetes Administrator</li>
+          <li>Google Cloud Architect</li>
+          <li>CSEP</li>
+        </ul>
+      </section>
+    </div>
+
+    <section>
+      <h2>Projects</h2>
+
+      <div class="item">
+        <h3>LRPM Kinematic Guidance Model Development</h3>
+
+        <p>
+          Supported C++ modeling work for LRPM kinematic guidance models,
+          including course-based, heading-based, and roll-based model variants.
+          Focus areas included model structure, generated definition variables,
+          simulation rebuilds, and debugging integration issues.
+        </p>
+      </div>
+
+      <div class="item">
+        <h3>6DOF Missile Simulation and Flight Dynamics</h3>
+
+        <p>
+          Developed and supported missile simulation components involving
+          high-fidelity flight dynamics, numerical modeling, trajectory
+          prediction, and integration of guidance and sensor behavior.
+        </p>
+      </div>
+
+      <div class="item">
+        <h3>Monte Carlo Simulation and V&V Workflows</h3>
+
+        <p>
+          Ran simulation studies to evaluate system performance, identify model
+          discrepancies, validate expected behavior, and improve confidence in
+          mission-critical simulation results.
+        </p>
+      </div>
+
+      <div class="item">
+        <h3>CI/CD and Engineering Tooling</h3>
+
+        <p>
+          Supported development workflows using GitLab CI/CD, Jenkins, Docker,
+          Linux/Unix environments, and scripting to improve build reliability and
+          iteration speed.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Leadership</h2>
+
+      <ul>
+        <li>
+          Experienced supporting cross-functional integration between software,
+          simulation, and mission operations teams in defense programs.
+        </li>
+        <li>
+          Mentor engineers through code reviews, design discussions, debugging
+          support, and simulation test strategies.
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Contact</h2>
+
+      <p>
+        Email:
+        <a href="mailto:david.k.tan2@gmail.com">david.k.tan2@gmail.com</a>
+        <br />
+
+        GitHub:
+        <a href="https://github.com/skytruong90">github.com/skytruong90</a>
+        <br />
+
+        LinkedIn:
+        <a href="https://www.linkedin.com/in/dtan90">
+          linkedin.com/in/dtan90
+        </a>
+      </p>
+    </section>
+
+    <footer>
+      © 2026 David Tan. Built as a simple résumé website.
+    </footer>
+  </main>
+</body>
+</html>
