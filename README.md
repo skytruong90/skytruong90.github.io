@@ -27,4 +27,4 @@ This website highlights my background as a software engineer with interests in:
 
 ## Contact
 
-Email: skytruong@gmail.com
+Email: davidktan2@gmail.com
