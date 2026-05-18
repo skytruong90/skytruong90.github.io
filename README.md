@@ -6,7 +6,7 @@ This repository contains my personal resume website hosted with GitHub Pages.
 
 Visit the site here:
 
-https://skytruong90.github.io
+https://davidktan.com
 
 ## About
 
