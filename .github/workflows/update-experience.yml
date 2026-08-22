@@ -1,0 +1,166 @@
+name: One-time resume experience update
+
+on:
+  push:
+    paths:
+      - .github/workflows/update-experience.yml
+
+permissions:
+  contents: write
+
+jobs:
+  update-experience:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace experience section from latest resume
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("index.html")
+          text = path.read_text(encoding="utf-8")
+          start_marker = "    <!-- EXPERIENCE -->"
+          end_marker = "    <!-- CREDENTIALS -->"
+
+          if start_marker not in text or end_marker not in text:
+              raise SystemExit("Experience/Credentials markers not found in index.html")
+
+          start = text.index(start_marker)
+          end = text.index(end_marker)
+
+          experience = '''    <!-- EXPERIENCE -->
+          <section id="experience" class="std reveal">
+            <div class="container">
+              <div class="section-head">
+                <div class="section-index">§ 03 — Experience</div>
+                <h2 class="section-title">Where I've <em>done the work</em>.</h2>
+              </div>
+
+              <div class="exp-list">
+                <article class="exp">
+                  <div class="exp-when">
+                    Feb 2026 —<br />Present
+                    <span class="current">Current</span>
+                  </div>
+                  <div>
+                    <h3 class="exp-role">Software Design Engineer III</h3>
+                    <div class="exp-org">Torch Technologies</div>
+                    <div class="exp-tags">
+                      <span class="tag">C++</span>
+                      <span class="tag">Python</span>
+                      <span class="tag">Linux</span>
+                      <span class="tag">6DOF Simulation</span>
+                    </div>
+                    <ul>
+                      <li>Developed C++ and Python features within model-development and simulation-execution frameworks, integrating updates across three software components and streamlining debugging workflows used for model validation.</li>
+                      <li>Diagnosed and resolved complex C++ and Python software defects using Linux, Visual Studio, Git, and automated unit and integration testing, reducing recurring issues by approximately 10% and improving software stability.</li>
+                      <li>Translated system requirements into software designs, code implementations, and verification documentation, reducing integration rework by approximately 15% and improving delivery efficiency.</li>
+                      <li>Collaborated with software, systems, and simulation engineers to design, integrate, and validate software enhancements across shared simulation baselines, ensuring compatibility and reliable end-to-end functionality.</li>
+                      <li>Designed, implemented, and validated high-fidelity C++ six-degree-of-freedom (6-DOF) missile simulation models, including autopilot control logic and the integration of guidance, sensor, and flight-dynamics components for LRPM and Hydra-70, increasing simulation throughput by 10%.</li>
+                    </ul>
+                  </div>
+                </article>
+
+                <article class="exp">
+                  <div class="exp-when">Sep 2024 —<br />Jan 2026</div>
+                  <div>
+                    <h3 class="exp-role">Software Engineer II</h3>
+                    <div class="exp-org">BAE Systems · Utah</div>
+                    <div class="exp-tags">
+                      <span class="tag">C++11</span>
+                      <span class="tag">6DOF</span>
+                      <span class="tag">Flight Dynamics</span>
+                      <span class="tag">LGM-35A Sentinel</span>
+                    </div>
+                    <ul>
+                      <li>Developed, reviewed, and tested C++11 six-degree-of-freedom (6-DOF) flight-dynamics models supporting LGM-35A Sentinel ICBM boost and post-boost performance, maintaining 100% traceability between software implementation and flight-performance requirements.</li>
+                      <li>Diagnosed and resolved simulation inconsistencies by analyzing flight behavior, debugging C++ model logic, and refining model assumptions, improving model fidelity and reducing downstream verification and validation effort.</li>
+                      <li>Implemented and validated software updates through code reviews, regression testing, and requirements-based analysis, helping maintain reliable simulation performance across evolving model baselines.</li>
+                    </ul>
+                  </div>
+                </article>
+
+                <article class="exp">
+                  <div class="exp-when">Jan 2023 —<br />Sep 2024</div>
+                  <div>
+                    <h3 class="exp-role">Software Engineer I</h3>
+                    <div class="exp-org">Space Dynamics Laboratory · Utah</div>
+                    <div class="exp-tags">
+                      <span class="tag">C++</span>
+                      <span class="tag">Python</span>
+                      <span class="tag">FORGE MDPAF</span>
+                      <span class="tag">Ground Software</span>
+                    </div>
+                    <ul>
+                      <li>Developed and maintained C++ and Python software modules within the FORGE MDPAF ground framework, implementing enhancements, debugging issues, and supporting reliable data-processing capabilities.</li>
+                      <li>Collaborated with cross-functional engineering teams to analyze requirements, troubleshoot software defects, and deliver high-quality solutions that improved system reliability and performance.</li>
+                    </ul>
+                  </div>
+                </article>
+
+                <article class="exp">
+                  <div class="exp-when">Jan 2019 —<br />Dec 2022</div>
+                  <div>
+                    <h3 class="exp-role">Information Technology Specialist</h3>
+                    <div class="exp-org">U.S. Air Force</div>
+                    <div class="exp-tags">
+                      <span class="tag">IT Support</span>
+                      <span class="tag">Systems</span>
+                      <span class="tag">Networking</span>
+                      <span class="tag">Workstations</span>
+                    </div>
+                    <ul>
+                      <li>Provided technical support for 100+ users, troubleshooting hardware, software, and network issues.</li>
+                      <li>Installed, configured, and maintained 100+ workstations, helping ensure 98% system availability and reliable support for daily military operations.</li>
+                    </ul>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          '''
+
+          updated = text[:start] + experience + text[end:]
+          path.write_text(updated, encoding="utf-8")
+          PY
+
+      - name: Validate update
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path("index.html").read_text(encoding="utf-8")
+          required = [
+              "Feb 2026 —<br />Present",
+              "Torch Technologies",
+              "BAE Systems · Utah",
+              "Space Dynamics Laboratory · Utah",
+              "U.S. Air Force",
+              "LRPM and Hydra-70",
+          ]
+          for item in required:
+              if item not in text:
+                  raise SystemExit(f"Missing expected experience content: {item}")
+          if "i3 (Integration Innovation, Inc.)" in text:
+              raise SystemExit("Outdated i3 experience is still present")
+          if '<div class="exp-org">ALKU · Utah</div>' in text:
+              raise SystemExit("Outdated ALKU employer is still present")
+          print("Experience section validated")
+          PY
+
+      - name: Commit website update and remove one-time workflow
+        shell: bash
+        run: |
+          rm .github/workflows/update-experience.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/update-experience.yml
+          git commit -m "Refresh experience section from updated resume"
+          git push
